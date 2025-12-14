@@ -150,3 +150,62 @@ elif page == "Sales Prediction (Regression)":
 
     st.write(f"**MAE:** {mae:,.2f}")
     st.write(f"**MSE:** {mse:,.2f}")
+
+# ==========================================
+# BAGIAN ASNA: REKOMENDASI STRATEGI BISNIS
+# ==========================================
+st.markdown("---")
+st.header("🤖 AI-Driven Business Recommendations")
+st.caption("Rekomendasi strategi otomatis berdasarkan hasil analisis data historis.")
+
+# Kita bagi strategi jadi 3 Tab biar rapi
+tab1, tab2, tab3 = st.tabs(["📦 Inventory & Stok", "📢 Marketing & Promo", "🛒 Bundling Produk"])
+
+with tab1:
+    st.subheader("Strategi Manajemen Stok (Seasonal)")
+    col_inv1, col_inv2 = st.columns(2)
+    
+    with col_inv1:
+        st.warning("⚠️ **Alert: Persiapan Peak Season**")
+        st.write("""
+        * **Insight:** Data menunjukkan tren penjualan selalu melonjak drastis di bulan **November & Desember**.
+        * **Action:** Tingkatkan stok produk *Best Seller* (seperti **'White Hanging Heart T-Light Holder'**) sebesar **30%** mulai bulan Oktober untuk mencegah kehabisan stok.
+        """)
+        
+    with col_inv2:
+        st.info("📉 **Alert: Antisipasi Low Season**")
+        st.write("""
+        * **Insight:** Prediksi penjualan turun signifikan di bulan **Januari**.
+        * **Action:** Hindari restock besar-besaran di akhir Desember. Siapkan event **'Cuci Gudang Awal Tahun'** untuk produk sisa Natal.
+        """)
+
+with tab2:
+    st.subheader("Strategi Target Segmen (Clustering)")
+    col_mkt1, col_mkt2 = st.columns(2)
+    
+    with col_mkt1:
+        st.success("💎 **Target: Cluster 2 (VIP Clients)**")
+        st.write("""
+        * **Karakter:** Jarang belanja, tapi nominal transaksi besar.
+        * **Action:** Jangan kirim spam diskon receh. Tawarkan **Layanan Prioritas** atau **Akses Pre-Order Eksklusif** lewat WhatsApp pribadi.
+        """)
+        
+    with col_mkt2:
+        st.error("💸 **Target: Cluster 3 (Thrifty Shoppers)**")
+        st.write("""
+        * **Karakter:** Sering belanja (43x) tapi nilai keranjang kecil (£1.3k).
+        * **Action:** Terapkan **Minimum Pembelian £20 untuk Gratis Ongkir**. Ini memaksa mereka menambah 1 barang lagi tiap checkout.
+        """)
+
+with tab3:
+    st.subheader("Strategi Produk (Cross-Selling)")
+    st.info("💡 **Peluang Bundling Produk**")
+    st.markdown("""
+    Berdasarkan pola pembelian, pelanggan sering membeli barang ini bersamaan:
+    
+    1. **Paket Baking:** *Teatime Fairy Cake Cases* + *Pack of 72 Retrospot Cake Cases*
+       * 👉 **Strategi:** Jual sebagai satu paket "Home Baking Kit" dengan diskon 10%.
+       
+    2. **Paket Dekorasi:** *Wooden Heart Decoration* + *Wooden Star Decoration*
+       * 👉 **Strategi:** Tawarkan *Wooden Star* di halaman checkout saat user membeli *Wooden Heart*.
+    """)
