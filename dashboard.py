@@ -245,12 +245,11 @@ elif page == "Business Strategy":
 
     st.markdown("---")
 
-    # =======================================================
-    # BAGIAN 2: TRANSAKSI & PRODUK (Sesuai Gambar Yellow Box)
+# =======================================================
+    # BAGIAN 2: TRANSAKSI & PRODUK (Revisi DOTCOM POSTAGE)
     # =======================================================
     st.header("2️⃣ Penjelasan Output Transaksi (Halaman 2)")
     
-    # 1. Penjelasan Output (Persis Text Gambar Kuning)
     col_t1, col_t2 = st.columns(2)
     
     with col_t1:
@@ -264,28 +263,28 @@ elif page == "Business Strategy":
     with col_t2:
         st.subheader("📦 Grafik: Top 10 Products")
         st.warning("""
-        **Output:** Produk *'White Hanging Heart T-Light Holder'* adalah produk terlaris #1.
+        **Output:** Item dengan pendapatan tertinggi adalah **'DOTCOM POSTAGE'**.
         
-        **Insight:** Ini adalah 'Produk Pancingan'. Pastikan stok barang ini **tidak boleh kosong** karena sering menjadi pintu masuk pelanggan untuk membeli barang lain.
+        **Insight:** Tingginya nilai transaksi *Postage* (Ongkir) menunjukkan frekuensi pengiriman paket kecil sangat tinggi. Pelanggan sering belanja eceran.
         """)
 
-    # 2. Strategi Bundling (Sesuai Gambar Paket Baking)
-    st.write("👉 **Rekomendasi Bundling Produk (Cross-Selling):**")
+    # Strategi Bundling & Membership (Disesuaikan dengan DOTCOM POSTAGE)
+    st.write("👉 **Rekomendasi Strategi Produk:**")
     
     col_bund1, col_bund2 = st.columns(2)
     
     with col_bund1:
         st.success("""
-        **1. Paket Baking (Home Baking Kit)**
-        * **Isi:** *Teatime Fairy Cake Cases* + *Pack of 72 Retrospot Cake Cases*
-        * **Strategi:** Jual sebagai satu paket dengan diskon 10%.
+        **1. Strategi DOTCOM POSTAGE (Membership)**
+        * **Masalah:** Biaya kirim tinggi bisa bikin pelanggan kabur.
+        * **Strategi:** Buat **"Membership Premium"** (Bayar di awal, Gratis Ongkir setahun). Ini mengikat pelanggan agar belanja terus.
         """)
         
     with col_bund2:
         st.success("""
-        **2. Paket Dekorasi**
-        * **Isi:** *Wooden Heart Decoration* + *Wooden Star Decoration*
-        * **Strategi:** Tawarkan *Wooden Star* di halaman checkout saat user membeli *Wooden Heart*.
+        **2. Strategi Produk Fisik (Bundling)**
+        * **Item:** *Rabbit Night Light* / *Paper Craft* (Produk fisik terlaris setelah Postage).
+        * **Strategi:** Tawarkan produk ini di kasir sebagai tambahan (*Add-on*).
         """)
 
     st.markdown("---")
