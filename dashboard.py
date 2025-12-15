@@ -166,110 +166,169 @@ elif page == "Sales Prediction (Regression)":
         st.metric("Mean Squared Error (MSE)", f"{mse:,.2f}")
 
 # ==============================================================================
-# PAGE 4 — BUSINESS STRATEGY (INI BAGIAN ASNA)
+# PAGE 4 — BUSINESS STRATEGY (KOMBINASI FINAL: VISUAL GAMBAR + STRATEGI TABS)
 # ==============================================================================
 elif page == "Business Strategy":
-    st.title("💡 Business Insights & Action Plan")
+    st.title("💡 Interpretasi Data & Strategi Bisnis")
     st.markdown("""
-    Halaman ini merangkum **hasil analisis data (Knowledge)** dan menerjemahkannya menjadi 
-    **strategi bisnis konkret** untuk pengambilan keputusan.
+    Halaman ini merangkum **penjelasan output (insight)** dari setiap halaman dashboard serta **rekomendasi strategi bisnis** yang dapat dieksekusi.
     """)
     st.markdown("---")
 
-    # -------------------------------------------------------
-    # BAGIAN 1: INTERPRETASI HASIL REGRESI (VIRGINIA)
-    # -------------------------------------------------------
-    st.header("1️⃣ Analisis Tren Penjualan (Regression Insight)")
+    # =======================================================
+    # BAGIAN 1: CLUSTERING (Sesuai Gambar Blue Box)
+    # =======================================================
+    st.header("1️⃣ Penjelasan Output Clustering (Halaman 1)")
     
-    col_reg1, col_reg2 = st.columns([1, 2])
+    # 1. Penjelasan Output (Persis Text Gambar Biru)
+    col_c1, col_c2 = st.columns(2)
     
-    with col_reg1:
-        st.info("📊 **Apa hasil output data ini?**")
-        st.markdown("""
-        * **Pola Musiman:** Data menunjukkan tren penjualan selalu mencapai puncak (*peak*) di akhir tahun (Nov-Des).
-        * **Tren Bulan Depan:** Model regresi memprediksi adanya penurunan permintaan pasca-liburan (Januari).
+    with col_c1:
+        st.subheader("📊 Grafik: Distribusi & Monetary")
+        st.info("""
+        **1. Pie Chart (Distribusi Pelanggan):**
+        * **Output:** Terlihat mayoritas pelanggan masuk ke **Cluster 3 (Hemat)**, sedangkan **Cluster 2 (VIP)** jumlahnya paling sedikit.
+        * **Makna:** Bisnis ini ditopang oleh banyak pembeli kecil, bukan sedikit pembeli besar (Volume Based).
+        
+        **2. Bar Chart (Rata-rata Monetary):**
+        * **Output:** Batang Cluster 2 menjulang paling tinggi.
+        * **Makna:** Meskipun jumlah orangnya sedikit, Cluster 2 menyumbang rata-rata uang terbesar per orang.
         """)
         
-    with col_reg2:
-        st.warning("🚀 **Strategi Bisnis (Action Plan)**")
-        st.write("Berdasarkan prediksi tersebut, manajemen disarankan melakukan:")
-        
-        # Tabs untuk Strategi Inventory
-        tab_inv1, tab_inv2 = st.tabs(["📦 Inventory (Stok)", "⚙️ Operasional"])
-        
-        with tab_inv1:
-            st.write("""
-            1. **Q4 (Okt-Des):** Tingkatkan stok barang *Best Seller* sebesar **30%** untuk mencegah *stock-out*.
-            2. **Q1 (Jan-Feb):** Tahan pembelian stok baru. Lakukan *Clearance Sale* untuk menghabiskan sisa stok Natal.
-            """)
-        with tab_inv2:
-            st.write("""
-            1. Tambah tenaga kerja paruh waktu (*packing*) hanya di bulan November-Desember.
-            2. Fokus efisiensi budget operasional di bulan Januari karena *cashflow* masuk menurun.
-            """)
+    with col_c2:
+        st.subheader("📈 Grafik: RFM Scatter Plot")
+        st.info("""
+        **3. Scatter Plot (Sebaran Titik):**
+        * **Output:** Titik-titik pelanggan terkelompok jelas berdasarkan warna.
+        * **Makna:** Algoritma K-Means berhasil memisahkan pelanggan secara valid.
+            * Area **Kanan Atas:** Pelanggan sering belanja & baru saja belanja (Loyal).
+            * Area **Kiri Bawah:** Pelanggan jarang belanja & sudah lama hilang (Churn).
+        """)
 
-    st.markdown("---")
+    # 2. Strategi Bisnis (Tabs - VIP Red Carpet)
+    st.write("👉 **Rekomendasi Strategi (Klik Tab di bawah):**")
+    
+    tab_vip, tab_loyal, tab_hemat, tab_churn = st.tabs(["👑 VIP Clients", "🌟 Loyal Customers", "🛒 Hemat/Thrifty", "⚠️ Berisiko Churn"])
 
-    # -------------------------------------------------------
-    # BAGIAN 2: INTERPRETASI HASIL CLUSTERING (KATRIN)
-    # -------------------------------------------------------
-    st.header("2️⃣ Segmentasi Pelanggan (Clustering Insight)")
-    st.caption("Analisis RFM membagi pelanggan menjadi 4 karakter unik. Berikut cara menanganinya:")
-
-    tab1, tab2, tab3, tab4 = st.tabs(["👑 VIP Clients", "🌟 Loyal Customers", "🛒 Hemat/Thrifty", "⚠️ Berisiko Churn"])
-
-    with tab1:
-        st.subheader("Cluster 2: VIP / Big Spenders")
+    with tab_vip:
         st.success("""
-        **Karakter:** Jarang belanja, tapi sekali transaksi nilainya sangat besar.
-        
-        **Strategi: 'The Red Carpet Treatment'**
+        **Cluster 2: VIP / Big Spenders**
+        * **Karakter:** Jarang belanja, tapi sekali transaksi nilainya sangat besar.
+        * **Strategi:** 'The Red Carpet Treatment'
         * **Action:** Tawarkan layanan **Personal Shopper** via WhatsApp.
         * **Offer:** Akses **Pre-Order** eksklusif untuk produk baru (No Discount needed).
         """)
 
-    with tab2:
-        st.subheader("Cluster 0: Loyal Customers")
+    with tab_loyal:
         st.info("""
-        **Karakter:** Rutin belanja dengan nilai transaksi menengah.
-        
-        **Strategi: 'Lock-in Ecosystem'**
-        * **Action:** Implementasikan **Point Reward System**.
-        * **Offer:** Setiap 10x belanja gratis 1 produk sample agar mereka tidak pindah kompetitor.
+        **Cluster 0: Loyal Customers**
+        * **Karakter:** Rutin belanja dengan nilai transaksi menengah.
+        * **Strategi:** 'Lock-in Ecosystem'
+        * **Action:** Implementasikan **Point Reward System**. Setiap 10x belanja gratis 1 produk sample.
         """)
 
-    with tab3:
-        st.subheader("Cluster 3: Thrifty Shoppers (Si Hemat)")
+    with tab_hemat:
         st.warning("""
-        **Karakter:** Sangat sering belanja, tapi nilai keranjangnya kecil (receh).
-        
-        **Strategi: 'Increase Basket Size'**
-        * **Action:** Terapkan aturan **'Gratis Ongkir Min. Belanja £20'**.
-        * **Goal:** Memaksa mereka menambah barang ke keranjang demi gratis ongkir (menaikkan margin).
+        **Cluster 3: Thrifty (Si Hemat)**
+        * **Karakter:** Sering belanja, tapi nilai keranjangnya kecil (receh).
+        * **Strategi:** 'Increase Basket Size'
+        * **Action:** Terapkan aturan **"Gratis Ongkir Min. Belanja £20"** untuk menaikkan margin.
         """)
 
-    with tab4:
-        st.subheader("Cluster 1: Churn Risk (Lama Menghilang)")
+    with tab_churn:
         st.error("""
-        **Karakter:** Sudah sangat lama tidak kembali belanja.
-        
-        **Strategi: 'Win-Back Campaign'**
-        * **Action:** Kirim email otomatis 'We Miss You'.
-        * **Offer:** Voucher Diskon 20% yang hangus dalam 24 jam (Urgency).
+        **Cluster 1: Churn Risk**
+        * **Karakter:** Sudah sangat lama tidak kembali belanja.
+        * **Strategi:** 'Win-Back Campaign'
+        * **Action:** Kirim email otomatis berisi **Voucher Diskon 20%** yang hangus dalam 24 jam.
         """)
-    
+
     st.markdown("---")
 
-    # -------------------------------------------------------
-    # BAGIAN 3: CROSS SELLING
-    # -------------------------------------------------------
-    st.header("3️⃣ Rekomendasi Produk (Bundling Strategy)")
-    st.markdown("""
-    Berdasarkan pola pembelian, pelanggan sering membeli barang ini bersamaan:
+    # =======================================================
+    # BAGIAN 2: TRANSAKSI & PRODUK (Sesuai Gambar Yellow Box)
+    # =======================================================
+    st.header("2️⃣ Penjelasan Output Transaksi (Halaman 2)")
     
-    1. **Paket Baking:** *Teatime Fairy Cake Cases* + *Pack of 72 Retrospot Cake Cases*
-       * 👉 **Strategi:** Jual sebagai satu paket "Home Baking Kit" dengan diskon 10%.
-       
-    2. **Paket Dekorasi:** *Wooden Heart Decoration* + *Wooden Star Decoration*
-       * 👉 **Strategi:** Tawarkan *Wooden Star* di halaman checkout saat user membeli *Wooden Heart*.
-    """)
+    # 1. Penjelasan Output (Persis Text Gambar Kuning)
+    col_t1, col_t2 = st.columns(2)
+    
+    with col_t1:
+        st.subheader("🌍 Grafik: Sales per Country")
+        st.warning("""
+        **Output:** Batang 'United Kingdom' mendominasi total penjualan (>90%).
+        
+        **Insight:** Pasar internasional belum maksimal. Strategi marketing saat ini sebaiknya fokus defensif di pasar lokal (UK) karena merupakan sumber pendapatan utama.
+        """)
+        
+    with col_t2:
+        st.subheader("📦 Grafik: Top 10 Products")
+        st.warning("""
+        **Output:** Produk *'White Hanging Heart T-Light Holder'* adalah produk terlaris #1.
+        
+        **Insight:** Ini adalah 'Produk Pancingan'. Pastikan stok barang ini **tidak boleh kosong** karena sering menjadi pintu masuk pelanggan untuk membeli barang lain.
+        """)
+
+    # 2. Strategi Bundling (Sesuai Gambar Paket Baking)
+    st.write("👉 **Rekomendasi Bundling Produk (Cross-Selling):**")
+    
+    col_bund1, col_bund2 = st.columns(2)
+    
+    with col_bund1:
+        st.success("""
+        **1. Paket Baking (Home Baking Kit)**
+        * **Isi:** *Teatime Fairy Cake Cases* + *Pack of 72 Retrospot Cake Cases*
+        * **Strategi:** Jual sebagai satu paket dengan diskon 10%.
+        """)
+        
+    with col_bund2:
+        st.success("""
+        **2. Paket Dekorasi**
+        * **Isi:** *Wooden Heart Decoration* + *Wooden Star Decoration*
+        * **Strategi:** Tawarkan *Wooden Star* di halaman checkout saat user membeli *Wooden Heart*.
+        """)
+
+    st.markdown("---")
+
+    # =======================================================
+    # BAGIAN 3: PREDIKSI REGRESI (Sesuai Gambar Red Box)
+    # =======================================================
+    st.header("3️⃣ Penjelasan Output Prediksi (Halaman 3)")
+    
+    # 1. Penjelasan Output (Persis Text Gambar Merah)
+    col_r1, col_r2 = st.columns(2)
+    
+    with col_r1:
+        st.subheader("📉 Grafik: Actual vs Prediction")
+        st.error("""
+        **1. Scatter Plot (Akurasi):**
+        * **Output:** Titik prediksi membentuk garis lurus diagonal (linear).
+        * **Makna:** Model regresi cukup akurat memprediksi angka penjualan (Error Rate rendah).
+        """)
+        
+    with col_r2:
+        st.subheader("📅 Grafik: Trend Bulanan")
+        st.error("""
+        **2. Line Chart (Tren Waktu):**
+        * **Output:** Grafik menunjukkan kenaikan tajam di bulan **November-Desember**.
+        * **Makna (Seasonality):** Bisnis ini sangat dipengaruhi tren akhir tahun (Natal/Tahun Baru).
+        """)
+
+    # 2. Strategi Bisnis (Tabs - Inventory 30%)
+    st.write("👉 **Rekomendasi Strategi (Klik Tab di bawah):**")
+    
+    tab_stok, tab_ops = st.tabs(["📦 Inventory (Stok)", "⚙️ Operasional"])
+    
+    with tab_stok:
+        st.success("""
+        **Strategi Manajemen Stok (Seasonal):**
+        1. **Q4 (Okt-Des):** Tingkatkan stok barang *Best Seller* sebesar **30%** untuk mencegah *stock-out*.
+        2. **Q1 (Jan-Feb):** Tahan pembelian stok baru. Lakukan **Clearance Sale** untuk menghabiskan sisa stok Natal.
+        """)
+        
+    with tab_ops:
+        st.info("""
+        **Strategi Operasional:**
+        1. **Manpower:** Tambah tenaga kerja paruh waktu (*packing*) hanya di bulan November-Desember.
+        2. **Efisiensi:** Fokus efisiensi budget operasional di bulan Januari karena *cashflow* masuk menurun.
+        """)
