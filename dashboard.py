@@ -1,43 +1,56 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 # ================================
-# LOAD FILE
+# CONFIG & LOAD FILE
 # ================================
-df_trans = pd.read_csv("01_data_full_cluster.csv")
-df_rfm = pd.read_csv("02_rfm_cluster.csv")
-df_summary = pd.read_csv("03_cluster_summary.csv")
-df_pred = pd.read_csv("prediction_results_walkforward.csv")
+st.set_page_config(page_title="E-Commerce Analytics Dashboard", layout="wide")
 
-# Pastikan kolom Month, Year ada
-if "Month" in df_pred.columns and "Year" in df_pred.columns:
-    df_pred["Period"] = df_pred["Year"].astype(str) + "-" + df_pred["Month"].astype(str).str.zfill(2)
-else:
-    df_pred["Period"] = ""
+# Cache data agar loading cepat
+@st.cache_data
+def load_data():
+    # Pastikan nama file sesuai dengan yang ada di folder kalian
+    df_trans = pd.read_csv("01_data_full_cluster.csv")
+    df_rfm = pd.read_csv("02_rfm_cluster.csv")
+    df_summary = pd.read_csv("03_cluster_summary.csv")
+    df_pred = pd.read_csv("prediction_results_walkforward.csv")
+
+    # Feature Engineering sederhana untuk Period
+    if "Month" in df_pred.columns and "Year" in df_pred.columns:
+        df_pred["Period"] = df_pred["Year"].astype(str) + "-" + df_pred["Month"].astype(str).str.zfill(2)
+    else:
+        df_pred["Period"] = ""
+    
+    return df_trans, df_rfm, df_summary, df_pred
+
+# Load Data
+try:
+    df_trans, df_rfm, df_summary, df_pred = load_data()
+except FileNotFoundError:
+    st.error("File CSV tidak ditemukan! Pastikan file csv ada di folder yang sama dengan script python.")
+    st.stop()
 
 # ================================
-# CONFIG
-# ================================
-st.set_page_config(page_title="E-Commerce Analytics Dashboard",
-                   layout="wide")
-
-# ================================
-# SIDEBAR
+# SIDEBAR NAVIGATION
 # ================================
 st.sidebar.title("📊 Dashboard Navigation")
+
+# ===> PERBAIKAN PENTING DISINI: Menambahkan menu 'Business Strategy' <===
 page = st.sidebar.radio("Go to:", [
     "Customer Segmentation (RFM)",
     "Transaction Insights",
-    "Sales Prediction (Regression)"
+    "Sales Prediction (Regression)",
+    "Business Strategy"  # <--- INI WAJIB ADA AGAR PAGE 4 MUNCUL
 ])
 
 st.sidebar.markdown("----")
-st.sidebar.caption("Made for your dataset 🔥")
+st.sidebar.caption("Capstone Project Team 5 🔥")
 
-# ================================
+# ==============================================================================
 # PAGE 1 — CUSTOMER SEGMENTATION
-# ================================
+# ==============================================================================
 if page == "Customer Segmentation (RFM)":
     st.title("🧍 Customer Segmentation — RFM + KMeans")
 
@@ -72,16 +85,16 @@ if page == "Customer Segmentation (RFM)":
         df_rfm,
         x="Recency",
         y="Frequency",
-        size=df_rfm["Monetary"].abs(),     # aman dari nilai negatif
+        size=df_rfm["Monetary"].abs(),
         color="Cluster",
         title="RFM Scatter Plot by Cluster",
         opacity=0.7
     )
     st.plotly_chart(fig3, use_container_width=True)
 
-# ================================
+# ==============================================================================
 # PAGE 2 — TRANSACTION INSIGHTS
-# ================================
+# ==============================================================================
 elif page == "Transaction Insights":
     st.title("🛒 Transaction Insights")
 
@@ -98,6 +111,7 @@ elif page == "Transaction Insights":
         )
         st.plotly_chart(fig4, use_container_width=True)
 
+    # Top Products
     st.subheader("Top 10 Products by Revenue")
     top_products = df_trans.groupby("Description")["TotalPrice"] \
                            .sum() \
@@ -114,9 +128,9 @@ elif page == "Transaction Insights":
     )
     st.plotly_chart(fig6, use_container_width=True)
 
-# ================================
+# ==============================================================================
 # PAGE 3 — SALES PREDICTION (REGRESSION)
-# ================================
+# ==============================================================================
 elif page == "Sales Prediction (Regression)":
     st.title("📈 Sales Prediction — Regression Model")
 
@@ -139,67 +153,117 @@ elif page == "Sales Prediction (Regression)":
     )
     st.plotly_chart(fig8, use_container_width=True)
 
-    st.subheader("Prediction Data")
-    st.dataframe(df_pred)
-
-    # Error metrics
-    st.subheader("Error Metrics")
-    from sklearn.metrics import mean_absolute_error, mean_squared_error
-    mae = mean_absolute_error(df_pred["Actual_Revenue"], df_pred["Predicted_Revenue"])
-    mse = mean_squared_error(df_pred["Actual_Revenue"], df_pred["Predicted_Revenue"])
-
-    st.write(f"**MAE:** {mae:,.2f}")
-    st.write(f"**MSE:** {mse:,.2f}")
-
-# ==========================================
-# BAGIAN ASNA: REKOMENDASI STRATEGI BISNIS
-# ==========================================
-st.markdown("---")
-st.header("🤖 AI-Driven Business Recommendations")
-st.caption("Rekomendasi strategi otomatis berdasarkan hasil analisis data historis.")
-
-# Kita bagi strategi jadi 3 Tab biar rapi
-tab1, tab2, tab3 = st.tabs(["📦 Inventory & Stok", "📢 Marketing & Promo", "🛒 Bundling Produk"])
-
-with tab1:
-    st.subheader("Strategi Manajemen Stok (Seasonal)")
-    col_inv1, col_inv2 = st.columns(2)
+    st.subheader("Prediction Data & Metrics")
+    col_metric1, col_metric2 = st.columns([2, 1])
     
-    with col_inv1:
-        st.warning("⚠️ **Alert: Persiapan Peak Season**")
-        st.write("""
-        * **Insight:** Data menunjukkan tren penjualan selalu melonjak drastis di bulan **November & Desember**.
-        * **Action:** Tingkatkan stok produk *Best Seller* (seperti **'White Hanging Heart T-Light Holder'**) sebesar **30%** mulai bulan Oktober untuk mencegah kehabisan stok.
+    with col_metric1:
+        st.dataframe(df_pred)
+    
+    with col_metric2:
+        mae = mean_absolute_error(df_pred["Actual_Revenue"], df_pred["Predicted_Revenue"])
+        mse = mean_squared_error(df_pred["Actual_Revenue"], df_pred["Predicted_Revenue"])
+        st.metric("Mean Absolute Error (MAE)", f"{mae:,.2f}")
+        st.metric("Mean Squared Error (MSE)", f"{mse:,.2f}")
+
+# ==============================================================================
+# PAGE 4 — BUSINESS STRATEGY (INI BAGIAN ASNA)
+# ==============================================================================
+elif page == "Business Strategy":
+    st.title("💡 Business Insights & Action Plan")
+    st.markdown("""
+    Halaman ini merangkum **hasil analisis data (Knowledge)** dan menerjemahkannya menjadi 
+    **strategi bisnis konkret** untuk pengambilan keputusan.
+    """)
+    st.markdown("---")
+
+    # -------------------------------------------------------
+    # BAGIAN 1: INTERPRETASI HASIL REGRESI (VIRGINIA)
+    # -------------------------------------------------------
+    st.header("1️⃣ Analisis Tren Penjualan (Regression Insight)")
+    
+    col_reg1, col_reg2 = st.columns([1, 2])
+    
+    with col_reg1:
+        st.info("📊 **Apa hasil output data ini?**")
+        st.markdown("""
+        * **Pola Musiman:** Data menunjukkan tren penjualan selalu mencapai puncak (*peak*) di akhir tahun (Nov-Des).
+        * **Tren Bulan Depan:** Model regresi memprediksi adanya penurunan permintaan pasca-liburan (Januari).
         """)
         
-    with col_inv2:
-        st.info("📉 **Alert: Antisipasi Low Season**")
-        st.write("""
-        * **Insight:** Prediksi penjualan turun signifikan di bulan **Januari**.
-        * **Action:** Hindari restock besar-besaran di akhir Desember. Siapkan event **'Cuci Gudang Awal Tahun'** untuk produk sisa Natal.
-        """)
-
-with tab2:
-    st.subheader("Strategi Target Segmen (Clustering)")
-    col_mkt1, col_mkt2 = st.columns(2)
-    
-    with col_mkt1:
-        st.success("💎 **Target: Cluster 2 (VIP Clients)**")
-        st.write("""
-        * **Karakter:** Jarang belanja, tapi nominal transaksi besar.
-        * **Action:** Jangan kirim spam diskon receh. Tawarkan **Layanan Prioritas** atau **Akses Pre-Order Eksklusif** lewat WhatsApp pribadi.
-        """)
+    with col_reg2:
+        st.warning("🚀 **Strategi Bisnis (Action Plan)**")
+        st.write("Berdasarkan prediksi tersebut, manajemen disarankan melakukan:")
         
-    with col_mkt2:
-        st.error("💸 **Target: Cluster 3 (Thrifty Shoppers)**")
-        st.write("""
-        * **Karakter:** Sering belanja (43x) tapi nilai keranjang kecil (£1.3k).
-        * **Action:** Terapkan **Minimum Pembelian £20 untuk Gratis Ongkir**. Ini memaksa mereka menambah 1 barang lagi tiap checkout.
+        # Tabs untuk Strategi Inventory
+        tab_inv1, tab_inv2 = st.tabs(["📦 Inventory (Stok)", "⚙️ Operasional"])
+        
+        with tab_inv1:
+            st.write("""
+            1. **Q4 (Okt-Des):** Tingkatkan stok barang *Best Seller* sebesar **30%** untuk mencegah *stock-out*.
+            2. **Q1 (Jan-Feb):** Tahan pembelian stok baru. Lakukan *Clearance Sale* untuk menghabiskan sisa stok Natal.
+            """)
+        with tab_inv2:
+            st.write("""
+            1. Tambah tenaga kerja paruh waktu (*packing*) hanya di bulan November-Desember.
+            2. Fokus efisiensi budget operasional di bulan Januari karena *cashflow* masuk menurun.
+            """)
+
+    st.markdown("---")
+
+    # -------------------------------------------------------
+    # BAGIAN 2: INTERPRETASI HASIL CLUSTERING (KATRIN)
+    # -------------------------------------------------------
+    st.header("2️⃣ Segmentasi Pelanggan (Clustering Insight)")
+    st.caption("Analisis RFM membagi pelanggan menjadi 4 karakter unik. Berikut cara menanganinya:")
+
+    tab1, tab2, tab3, tab4 = st.tabs(["👑 VIP Clients", "🌟 Loyal Customers", "🛒 Hemat/Thrifty", "⚠️ Berisiko Churn"])
+
+    with tab1:
+        st.subheader("Cluster 2: VIP / Big Spenders")
+        st.success("""
+        **Karakter:** Jarang belanja, tapi sekali transaksi nilainya sangat besar.
+        
+        **Strategi: 'The Red Carpet Treatment'**
+        * **Action:** Tawarkan layanan **Personal Shopper** via WhatsApp.
+        * **Offer:** Akses **Pre-Order** eksklusif untuk produk baru (No Discount needed).
         """)
 
-with tab3:
-    st.subheader("Strategi Produk (Cross-Selling)")
-    st.info("💡 **Peluang Bundling Produk**")
+    with tab2:
+        st.subheader("Cluster 0: Loyal Customers")
+        st.info("""
+        **Karakter:** Rutin belanja dengan nilai transaksi menengah.
+        
+        **Strategi: 'Lock-in Ecosystem'**
+        * **Action:** Implementasikan **Point Reward System**.
+        * **Offer:** Setiap 10x belanja gratis 1 produk sample agar mereka tidak pindah kompetitor.
+        """)
+
+    with tab3:
+        st.subheader("Cluster 3: Thrifty Shoppers (Si Hemat)")
+        st.warning("""
+        **Karakter:** Sangat sering belanja, tapi nilai keranjangnya kecil (receh).
+        
+        **Strategi: 'Increase Basket Size'**
+        * **Action:** Terapkan aturan **'Gratis Ongkir Min. Belanja £20'**.
+        * **Goal:** Memaksa mereka menambah barang ke keranjang demi gratis ongkir (menaikkan margin).
+        """)
+
+    with tab4:
+        st.subheader("Cluster 1: Churn Risk (Lama Menghilang)")
+        st.error("""
+        **Karakter:** Sudah sangat lama tidak kembali belanja.
+        
+        **Strategi: 'Win-Back Campaign'**
+        * **Action:** Kirim email otomatis 'We Miss You'.
+        * **Offer:** Voucher Diskon 20% yang hangus dalam 24 jam (Urgency).
+        """)
+    
+    st.markdown("---")
+
+    # -------------------------------------------------------
+    # BAGIAN 3: CROSS SELLING
+    # -------------------------------------------------------
+    st.header("3️⃣ Rekomendasi Produk (Bundling Strategy)")
     st.markdown("""
     Berdasarkan pola pembelian, pelanggan sering membeli barang ini bersamaan:
     
